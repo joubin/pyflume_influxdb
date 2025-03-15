@@ -2,19 +2,17 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install curl for healthcheck
+# Install git for installing dependencies
 RUN apt-get update && \
-    apt-get install -y curl && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install dependencies
-COPY pyproject.toml .
-RUN pip install poetry && \
-    poetry config virtualenvs.create false && \
-    poetry install --no-interaction --no-ansi
+    apt-get install -y --no-install-recommends \
+    git \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy source code
 COPY . .
+
+# Install package in editable mode with test dependencies
+RUN pip install --no-cache-dir -e ".[test]"
 
 # Run tests
 CMD ["pytest", "tests/", "-v"] 

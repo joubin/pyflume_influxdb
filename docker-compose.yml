@@ -35,23 +35,23 @@ services:
       timeout: 10s
       retries: 3
 
-  # Service for running tests
-  test:
-    build:
-      context: .
-      dockerfile: Dockerfile.test
-    environment:
-      - FLUME_CLIENT_ID=${FLUME_CLIENT_ID}
-      - FLUME_CLIENT_SECRET=${FLUME_CLIENT_SECRET}
-      - FLUME_USERNAME=${FLUME_USERNAME}
-      - FLUME_PASSWORD=${FLUME_PASSWORD}
-      - INFLUXDB_URL=http://influxdb:8086
-      - INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
-      - INFLUXDB_ORG=${INFLUXDB_ORG}
-      - INFLUXDB_BUCKET=test_bucket
-      - INFLUXDB_MEASUREMENT=${INFLUXDB_MEASUREMENT}
-    depends_on:
-      - influxdb
+  # # Service for running tests
+  # test:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.test
+  #   environment:
+  #     - FLUME_CLIENT_ID=${FLUME_CLIENT_ID}
+  #     - FLUME_CLIENT_SECRET=${FLUME_CLIENT_SECRET}
+  #     - FLUME_USERNAME=${FLUME_USERNAME}
+  #     - FLUME_PASSWORD=${FLUME_PASSWORD}
+  #     - INFLUXDB_URL=http://influxdb:8086
+  #     - INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
+  #     - INFLUXDB_ORG=${INFLUXDB_ORG}
+  #     - INFLUXDB_BUCKET=test_bucket
+  #     - INFLUXDB_MEASUREMENT=${INFLUXDB_MEASUREMENT}
+  #   depends_on:
+  #     - influxdb
 
 volumes:
   influxdb_data: 

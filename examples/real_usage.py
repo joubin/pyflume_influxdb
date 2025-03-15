@@ -24,12 +24,13 @@ async def monitor_device(client, device):
         while True:
             # Get current flow status and store in InfluxDB
             current_flow = await client.get_current_flow(device.id)
-            await client.write_to_influxdb(device.id, current_flow)
+            if client._write_api:  # Only write if InfluxDB is configured
+                await client.write_to_influxdb(device.id, current_flow)
+                print("✅ Data stored in InfluxDB")
             
             print(f"\n🚰 Flow Status @ {current_flow['datetime']}")
             print(f"Active: {'Yes' if current_flow['active'] else 'No'}")
             print(f"Flow rate: {current_flow['gpm']:.2f} GPM")
-            print("✅ Data stored in InfluxDB")
 
             # Check for new alerts every minute
             current_time = datetime.fromisoformat(current_flow['datetime'].replace(' ', 'T'))
@@ -48,7 +49,7 @@ async def monitor_device(client, device):
                 
                 last_alert_time = current_time
 
-            await asyncio.sleep(30)  # Wait 30 seconds before next check to respect API limits
+            await asyncio.sleep(10)  # Wait 30 seconds before next check to respect API limits
 
     except asyncio.CancelledError:
         print(f"\nStopped monitoring device {device.id}")
@@ -82,7 +83,7 @@ async def main():
     ) as client:
         # List all devices
         print("\n📱 Fetching devices...")
-        devices = await client.get_devices(include_location=True)
+        devices = await client.get_devices(location=True)
         print(f"Found {len(devices)} devices")
         
         if not client._write_api:

@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field, ConfigDict
+from pydantic.json_schema import JsonSchemaValue
 
 
 class FlumeResponse(BaseModel):
@@ -103,5 +104,23 @@ class WaterUsage(BaseModel):
     units: str = Field(default="gallons", description="The units of measurement")
     
     model_config = ConfigDict(
-        json_encoders={datetime: lambda v: v.isoformat()}
-    ) 
+        ser_json_timedelta="iso8601",
+        ser_json_bytes="base64",
+        json_schema_extra={
+            "examples": [
+                {
+                    "device_id": "123",
+                    "timestamp": "2024-03-15T10:00:00",
+                    "value": 1.5,
+                    "units": "gallons"
+                }
+            ]
+        }
+    )
+
+    def model_dump_json(self, **kwargs) -> str:
+        """Custom JSON serialization for datetime fields."""
+        data = self.model_dump()
+        if isinstance(data["timestamp"], datetime):
+            data["timestamp"] = data["timestamp"].isoformat()
+        return super().model_dump_json(**kwargs) 

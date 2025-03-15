@@ -17,21 +17,9 @@ RUN pip install --no-cache-dir -e ".[test]"
 # Run tests first
 RUN pytest tests/
 
-# Create a script to run the real example
-RUN echo '#!/bin/sh\n\
-if [ ! -f .env ]; then\n\
-    echo "Error: .env file not found. Please create one based on .env.example"\n\
-    exit 1\n\
-fi\n\
-\n\
-# Load environment variables\n\
-export $(cat .env | xargs)\n\
-\n\
-# Run the real usage example\n\
-python examples/real_usage.py\n\
-' > /app/run.sh
-
-RUN chmod +x /app/run.sh
+# Create a simple run script that loads environment variables
+RUN echo '#!/bin/sh\nset -e\n\nif [ ! -f .env ]; then\n    echo "Error: .env file not found"\n    exit 1\nfi\n\n# Load environment variables\nwhile read line; do\n    case "$line" in\n        "#"*|"") continue ;;\n    esac\n    eval "export $line"\ndone < .env\n\npython examples/real_usage.py' > /app/run.sh && \
+    chmod +x /app/run.sh
 
 # Set the entrypoint
 ENTRYPOINT ["/app/run.sh"] 

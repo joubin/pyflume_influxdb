@@ -52,8 +52,13 @@ strict = true
 warn_return_any = true
 warn_unused_configs = true
 
+[project.urls]
+Homepage = "https://github.com/joubin/pyflume-influxdb"
+Issues = "https://github.com/joubin/pyflume-influxdb/issues"
+
 [tool.pytest.ini_options]
-addopts = "-ra -q"
-testpaths = [
-    "tests",
-] 
+asyncio_mode = "strict"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --cov=pyflume_influxdb --cov-report=term-missing" 
